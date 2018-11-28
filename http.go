@@ -57,10 +57,10 @@ func (c *client) get(path string, out interface{}) (http.Header, error) {
 	return res.Header, err
 }
 
-func getNextLink(headers http.Header) (string, bool) {
+func (c *client) getNextLink(headers http.Header) (string, bool) {
 	link := headers.Get("link")
 	if link != "" {
-		return strings.TrimPrefix(strings.TrimSuffix(link, ">; rel=\"next\""), "<https://flinks.freshdesk.com"), true
+		return strings.TrimPrefix(strings.TrimSuffix(link, ">; rel=\"next\""), fmt.Sprintf("<https://%s.freshdesk.com", c.Domain)), true
 	}
 	return "", false
 }

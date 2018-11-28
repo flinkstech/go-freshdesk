@@ -47,7 +47,7 @@ func (c client) GetCompanies() (CompanySlice, error) {
 		return CompanySlice{}, err
 	}
 	for {
-		if nextPage, ok := getNextLink(headers); ok {
+		if nextPage, ok := c.getNextLink(headers); ok {
 			nextSlice := CompanySlice{}
 			headers, err = c.get(nextPage, &nextSlice)
 			if err != nil {
