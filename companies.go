@@ -5,6 +5,20 @@ import (
 	"time"
 )
 
+type CompanyManager interface {
+	All() (CompanySlice, error)
+}
+
+type companyManager struct {
+	client *apiClient
+}
+
+func newCompanyManager(client *apiClient) companyManager {
+	return companyManager{
+		client,
+	}
+}
+
 type Company struct {
 	ID           int                    `json:"id"`
 	Name         string                 `json:"name"`
@@ -40,16 +54,16 @@ func (c CompanySlice) Print() {
 	}
 }
 
-func (c client) GetCompanies() (CompanySlice, error) {
+func (manager companyManager) All() (CompanySlice, error) {
 	output := CompanySlice{}
-	headers, err := c.get(endpoints.Companies.All, &output)
+	headers, err := manager.client.get(endpoints.Companies.All, &output)
 	if err != nil {
 		return CompanySlice{}, err
 	}
 	for {
-		if nextPage, ok := c.getNextLink(headers); ok {
+		if nextPage, ok := manager.client.getNextLink(headers); ok {
 			nextSlice := CompanySlice{}
-			headers, err = c.get(nextPage, &nextSlice)
+			headers, err = manager.client.get(nextPage, &nextSlice)
 			if err != nil {
 				return CompanySlice{}, err
 			}

@@ -9,12 +9,12 @@ import (
 	"strings"
 )
 
-func (c *client) postJSON(path string, requestBody interface{}, out interface{}) error {
+func (c *apiClient) postJSON(path string, requestBody interface{}, out interface{}) error {
 	httpClient := &http.Client{}
 	jsonb, _ := json.Marshal(&requestBody)
-	req, _ := http.NewRequest("POST", fmt.Sprintf("https://%s.freshdesk.com%s", c.Domain, path), bytes.NewReader(jsonb))
+	req, _ := http.NewRequest("POST", fmt.Sprintf("https://%s.freshdesk.com%s", c.domain, path), bytes.NewReader(jsonb))
 
-	req.SetBasicAuth(c.APIKey, "X")
+	req.SetBasicAuth(c.apiKey, "X")
 	req.Header.Add("Content-type", "application/json")
 
 	res, err := httpClient.Do(req)
@@ -32,14 +32,14 @@ func (c *client) postJSON(path string, requestBody interface{}, out interface{})
 	return err
 }
 
-func (c *client) get(path string, out interface{}) (http.Header, error) {
+func (c *apiClient) get(path string, out interface{}) (http.Header, error) {
 	httpClient := &http.Client{}
-	req, err := http.NewRequest("GET", fmt.Sprintf("https://%s.freshdesk.com%s", c.Domain, path), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("https://%s.freshdesk.com%s", c.domain, path), nil)
 	if err != nil {
 		return nil, err
 	}
 
-	req.SetBasicAuth(c.APIKey, "X")
+	req.SetBasicAuth(c.apiKey, "X")
 	req.Header.Add("Content-type", "application/json")
 
 	res, err := httpClient.Do(req)
@@ -57,10 +57,10 @@ func (c *client) get(path string, out interface{}) (http.Header, error) {
 	return res.Header, err
 }
 
-func (c *client) getNextLink(headers http.Header) (string, bool) {
+func (c *apiClient) getNextLink(headers http.Header) (string, bool) {
 	link := headers.Get("link")
 	if link != "" {
-		return strings.TrimPrefix(strings.TrimSuffix(link, ">; rel=\"next\""), fmt.Sprintf("<https://%s.freshdesk.com", c.Domain)), true
+		return strings.TrimPrefix(strings.TrimSuffix(link, ">; rel=\"next\""), fmt.Sprintf("<https://%s.freshdesk.com", c.domain)), true
 	}
 	return "", false
 }

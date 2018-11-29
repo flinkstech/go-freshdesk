@@ -1,17 +1,17 @@
 package freshdesk
 
-type Client interface {
-	GetCompanies() (CompanySlice, error)
+type apiClient struct {
+	domain    string
+	apiKey    string
+	Companies CompanyManager
 }
 
-func Init(domain, apiKey string) Client {
-	return client{
-		Domain: domain,
-		APIKey: apiKey,
+// Init initializes the package
+func Init(domain, apiKey string) apiClient {
+	client := apiClient{
+		domain: domain,
+		apiKey: apiKey,
 	}
-}
-
-type client struct {
-	Domain string
-	APIKey string
+	client.Companies = newCompanyManager(&client)
+	return client
 }
