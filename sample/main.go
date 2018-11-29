@@ -18,4 +18,16 @@ func main() {
 		panic(err)
 	}
 	tickets.Print()
+
+	ticket, err := client.Tickets.Create(freshdesk.CreateTicket{
+		Subject:     "Ticket Subject",
+		Description: "Ticket description.",
+		Email:       "identifier@domain.tld",
+		Status:      freshdesk.StatusOpen.Value(),
+		Priority:    freshdesk.PriorityLow.Value(),
+	})
+	if err != nil {
+		panic(err)
+	}
+	ticket.Print()
 }

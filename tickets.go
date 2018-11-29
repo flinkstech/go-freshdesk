@@ -1,12 +1,14 @@
 package freshdesk
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 )
 
 type TicketManager interface {
 	All() (TicketSlice, error)
+	Create(CreateTicket) (Ticket, error)
 }
 
 type ticketManager struct {
@@ -56,6 +58,81 @@ type Ticket struct {
 	CustomFields           map[string]interface{} `json:"custom_fields"`
 }
 
+type CreateTicket struct {
+	Name               string                 `json:"name,omitempty"`
+	RequesterID        int                    `json:"requester_id,omitempty"`
+	Email              string                 `json:"email,omitempty"`
+	FacebookID         string                 `json:"facebook_id,omitempty"`
+	Phone              string                 `json:"phone,omitempty"`
+	TwitterID          string                 `json:"twitter_id,omitempty"`
+	UniqueExternalID   string                 `json:"unique_external_id,omitempty"`
+	Subject            string                 `json:"subject,omitempty"`
+	Type               string                 `json:"type,omitempty"`
+	Status             int                    `json:"status,omitempty"`
+	Priority           int                    `json:"priority,omitempty"`
+	Description        string                 `json:"description,omitempty"`
+	ResponderID        int                    `json:"responder_id,omitempty"`
+	Attachments        []interface{}          `json:"attachments,omitempty"`
+	CCEmails           []string               `json:"cc_emails,omitempty"`
+	CustomFields       map[string]interface{} `json:"custom_fields,omitempty"`
+	DueBy              *time.Time             `json:"due_by,omitempty"`
+	EmailConfigID      int                    `json:"email_config_id,omitempty"`
+	FirstResponseDueBy *time.Time             `json:"fr_due_by,omitempty"`
+	GroupID            int                    `json:"group_id,omitempty"`
+	ProductID          int                    `json:"product_id,omitempty"`
+	Source             int                    `json:"source,omitempty"`
+	Tags               []string               `json:"tags,omitempty"`
+	CompanyID          int                    `json:"company_id,omitempty"`
+}
+
+type Source int
+type Status int
+type Priority int
+
+const (
+	SourceEmail Source = 1 + iota
+	SourcePortal
+	SourcePhone
+	_
+	_
+	_
+	SourceChat
+	SourceMobihelp
+	SourceFeedbackWidget
+	SourceOutboundEmail
+)
+
+const (
+	StatusOpen Status = 2 + iota
+	StatusPending
+	StatusResolved
+	StatusClosed
+)
+
+const (
+	PriorityLow Priority = 1 + iota
+	PriorityMedium
+	PriorityHigh
+	PriorityUrgent
+)
+
+func (s Source) Value() int {
+	return int(s)
+}
+
+func (s Status) Value() int {
+	return int(s)
+}
+
+func (p Priority) Value() int {
+	return int(p)
+}
+
+func (t Ticket) Print() {
+	jsonb, _ := json.MarshalIndent(t, "", "    ")
+	fmt.Println(string(jsonb))
+}
+
 type TicketSlice []Ticket
 
 func (s TicketSlice) Len() int { return len(s) }
@@ -87,6 +164,20 @@ func (manager ticketManager) All() (TicketSlice, error) {
 			continue
 		}
 		break
+	}
+	return output, nil
+}
+
+func (manager ticketManager) Create(ticket CreateTicket) (Ticket, error) {
+	output := Ticket{}
+	jsonb, err := json.Marshal(ticket)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf(string(jsonb))
+	err = manager.client.postJSON(endpoints.tickets.create, jsonb, &output, 201)
+	if err != nil {
+		return Ticket{}, err
 	}
 	return output, nil
 }

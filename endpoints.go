@@ -5,7 +5,8 @@ type companyEndpoints struct {
 }
 
 type ticketEndpoints struct {
-	all string
+	all    string
+	create string
 }
 
 var endpoints = struct {
@@ -16,6 +17,7 @@ var endpoints = struct {
 		all: "/api/v2/companies",
 	},
 	tickets: ticketEndpoints{
-		all: "/api/v2/tickets",
+		all:    "/api/v2/tickets",
+		create: "/api/v2/tickets",
 	},
 }

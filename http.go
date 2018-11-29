@@ -3,16 +3,15 @@ package freshdesk
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strings"
 )
 
-func (c *apiClient) postJSON(path string, requestBody interface{}, out interface{}) error {
+func (c *apiClient) postJSON(path string, requestBody []byte, out interface{}, expectedStatus int) error {
 	httpClient := &http.Client{}
-	jsonb, _ := json.Marshal(&requestBody)
-	req, _ := http.NewRequest("POST", fmt.Sprintf("https://%s.freshdesk.com%s", c.domain, path), bytes.NewReader(jsonb))
+	req, _ := http.NewRequest("POST", fmt.Sprintf("https://%s.freshdesk.com%s", c.domain, path), bytes.NewReader(requestBody))
 
 	req.SetBasicAuth(c.apiKey, "X")
 	req.Header.Add("Content-type", "application/json")
@@ -23,8 +22,10 @@ func (c *apiClient) postJSON(path string, requestBody interface{}, out interface
 	}
 	defer res.Body.Close()
 
-	if res.StatusCode != 200 {
-		return errors.New("Freshdesk server didn't like the request")
+	if res.StatusCode != expectedStatus {
+		body, _ := ioutil.ReadAll(res.Body)
+		fmt.Println(string(body))
+		return fmt.Errorf("received status code %d (200 expected)", res.StatusCode)
 	}
 
 	err = json.NewDecoder(res.Body).Decode(out)
