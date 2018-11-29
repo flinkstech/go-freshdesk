@@ -23,8 +23,12 @@ func (c *apiClient) postJSON(path string, requestBody []byte, out interface{}, e
 	defer res.Body.Close()
 
 	if res.StatusCode != expectedStatus {
-		body, _ := ioutil.ReadAll(res.Body)
-		fmt.Println(string(body))
+		if res.StatusCode == http.StatusBadRequest && c.logger != nil {
+			body, _ := ioutil.ReadAll(res.Body)
+			var jsonBuffer bytes.Buffer
+			json.Indent(&jsonBuffer, body, "", "\t")
+			c.logger.Println(string(jsonBuffer.Bytes()))
+		}
 		return fmt.Errorf("received status code %d (200 expected)", res.StatusCode)
 	}
 

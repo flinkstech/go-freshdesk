@@ -3,6 +3,7 @@ package freshdesk
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"time"
 )
 
@@ -174,8 +175,7 @@ func (manager ticketManager) Create(ticket CreateTicket) (Ticket, error) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf(string(jsonb))
-	err = manager.client.postJSON(endpoints.tickets.create, jsonb, &output, 201)
+	err = manager.client.postJSON(endpoints.tickets.create, jsonb, &output, http.StatusCreated)
 	if err != nil {
 		return Ticket{}, err
 	}
