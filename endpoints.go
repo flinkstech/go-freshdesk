@@ -1,13 +1,21 @@
 package freshdesk
 
 type companyEndpoints struct {
-	All string
+	all string
+}
+
+type ticketEndpoints struct {
+	all string
 }
 
 var endpoints = struct {
-	Companies companyEndpoints
+	companies companyEndpoints
+	tickets   ticketEndpoints
 }{
-	Companies: companyEndpoints{
-		All: "/api/v2/companies",
+	companies: companyEndpoints{
+		all: "/api/v2/companies",
+	},
+	tickets: ticketEndpoints{
+		all: "/api/v2/tickets",
 	},
 }

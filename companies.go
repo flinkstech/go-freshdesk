@@ -56,7 +56,7 @@ func (c CompanySlice) Print() {
 
 func (manager companyManager) All() (CompanySlice, error) {
 	output := CompanySlice{}
-	headers, err := manager.client.get(endpoints.Companies.All, &output)
+	headers, err := manager.client.get(endpoints.companies.all, &output)
 	if err != nil {
 		return CompanySlice{}, err
 	}
