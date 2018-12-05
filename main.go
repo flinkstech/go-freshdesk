@@ -5,11 +5,12 @@ import (
 )
 
 type apiClient struct {
-	domain    string
-	apiKey    string
-	logger    *log.Logger
-	Companies CompanyManager
-	Tickets   TicketManager
+	domain      string
+	apiKey      string
+	logger      *log.Logger
+	Companies   CompanyManager
+	Tickets     TicketManager
+	SLAPolicies SLAPolicyManager
 }
 
 type ClientOptions struct {
@@ -31,5 +32,6 @@ func Init(domain, apiKey string, options *ClientOptions) apiClient {
 	}
 	client.Companies = newCompanyManager(&client)
 	client.Tickets = newTicketManager(&client)
+	client.SLAPolicies = newSLAPolicyManager(&client)
 	return client
 }

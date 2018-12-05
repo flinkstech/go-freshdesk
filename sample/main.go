@@ -1,11 +1,16 @@
 package main
 
 import (
+	"log"
+	"os"
+
 	freshdesk "github.com/flinkstech/go-freshdesk"
 )
 
 func main() {
-	client := freshdesk.Init("domain", "apikey")
+	logger := log.New(os.Stdout, "[logger] ", 0)
+
+	client := freshdesk.Init("domain", "apikey", &freshdesk.ClientOptions{Logger: logger}) // Or use freshdesk.EmptyOptions()
 
 	companies, err := client.Companies.All()
 	if err != nil {

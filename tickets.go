@@ -173,7 +173,7 @@ func (manager ticketManager) Create(ticket CreateTicket) (Ticket, error) {
 	output := Ticket{}
 	jsonb, err := json.Marshal(ticket)
 	if err != nil {
-		panic(err)
+		return output, nil
 	}
 	err = manager.client.postJSON(endpoints.tickets.create, jsonb, &output, http.StatusCreated)
 	if err != nil {

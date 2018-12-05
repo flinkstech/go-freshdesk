@@ -27,9 +27,44 @@ func (c *apiClient) postJSON(path string, requestBody []byte, out interface{}, e
 			body, _ := ioutil.ReadAll(res.Body)
 			var jsonBuffer bytes.Buffer
 			json.Indent(&jsonBuffer, body, "", "\t")
-			c.logger.Println(string(jsonBuffer.Bytes()))
+			if c.logger != nil {
+				c.logger.Println(string(jsonBuffer.Bytes()))
+			}
 		}
-		return fmt.Errorf("received status code %d (200 expected)", res.StatusCode)
+		return fmt.Errorf("received status code %d (%d expected)", res.StatusCode, expectedStatus)
+	}
+
+	err = json.NewDecoder(res.Body).Decode(out)
+
+	return err
+}
+
+func (c *apiClient) put(path string, requestBody []byte, out interface{}, expectedStatus int) error {
+	httpClient := &http.Client{}
+	if c.logger != nil {
+		c.logger.Println(string(requestBody))
+	}
+	req, _ := http.NewRequest("PUT", fmt.Sprintf("https://%s.freshdesk.com%s", c.domain, path), bytes.NewReader(requestBody))
+
+	req.SetBasicAuth(c.apiKey, "X")
+	req.Header.Add("Content-type", "application/json")
+
+	res, err := httpClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != expectedStatus {
+		if res.StatusCode == http.StatusBadRequest && c.logger != nil {
+			body, _ := ioutil.ReadAll(res.Body)
+			var jsonBuffer bytes.Buffer
+			json.Indent(&jsonBuffer, body, "", "\t")
+			if c.logger != nil {
+				c.logger.Println(string(jsonBuffer.Bytes()))
+			}
+		}
+		return fmt.Errorf("received status code %d (%d expected)", res.StatusCode, expectedStatus)
 	}
 
 	err = json.NewDecoder(res.Body).Decode(out)
