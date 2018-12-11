@@ -9,8 +9,9 @@ type apiClient struct {
 	apiKey      string
 	logger      *log.Logger
 	Companies   CompanyManager
-	Tickets     TicketManager
 	SLAPolicies SLAPolicyManager
+	Solutions   SolutionManager
+	Tickets     TicketManager
 }
 
 type ClientOptions struct {
@@ -31,7 +32,8 @@ func Init(domain, apiKey string, options *ClientOptions) apiClient {
 		client.logger = options.Logger
 	}
 	client.Companies = newCompanyManager(&client)
-	client.Tickets = newTicketManager(&client)
 	client.SLAPolicies = newSLAPolicyManager(&client)
+	client.Solutions = newSolutionManager(&client)
+	client.Tickets = newTicketManager(&client)
 	return client
 }
