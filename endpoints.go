@@ -3,7 +3,8 @@ package freshdesk
 import "fmt"
 
 type companyEndpoints struct {
-	all string
+	all    string
+	create string
 }
 
 type ticketEndpoints struct {
@@ -25,7 +26,8 @@ type folderEndpoints struct {
 }
 
 type articleEndpoints struct {
-	get func(int) string
+	delete func(int) string
+	get    func(int) string
 }
 
 type solutionEndpoints struct {
@@ -42,7 +44,8 @@ var endpoints = struct {
 	tickets     ticketEndpoints
 }{
 	companies: companyEndpoints{
-		all: "/api/v2/companies",
+		all:    "/api/v2/companies",
+		create: "/api/v2/companies",
 	},
 	slaPolicies: slaPolicyEndpoints{
 		all:    "/api/v2/sla_policies",
@@ -57,7 +60,8 @@ var endpoints = struct {
 			articles: func(id int) string { return fmt.Sprintf("/api/v2/solutions/folders/%d/articles", id) },
 		},
 		articles: articleEndpoints{
-			get: func(id int) string { return fmt.Sprintf("/api/v2/solutions/articles/%d", id) }, // Not currently in use
+			delete: func(id int) string { return fmt.Sprintf("/api/v2/solutions/articles/%d", id) },
+			get:    func(id int) string { return fmt.Sprintf("/api/v2/solutions/articles/%d", id) }, // Not currently in use
 		},
 	},
 	tickets: ticketEndpoints{

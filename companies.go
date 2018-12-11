@@ -1,12 +1,15 @@
 package freshdesk
 
 import (
+	"encoding/json"
 	"fmt"
+	"net/http"
 	"time"
 )
 
 type CompanyManager interface {
 	All() (CompanySlice, error)
+	Create(CreateCompany) (Company, error)
 }
 
 type companyManager struct {
@@ -31,6 +34,18 @@ type Company struct {
 	Industry     string                 `json:"industry"`
 	CreatedAt    time.Time              `json:"created_at"`
 	UpdatedAt    time.Time              `json:"updated_at"`
+	CustomFields map[string]interface{} `json:"custom_fields"`
+}
+
+type CreateCompany struct {
+	Name         string                 `json:"name"`
+	Description  string                 `json:"description"`
+	Domains      []string               `json:"domains"`
+	Note         string                 `json:"note"`
+	HealthScore  string                 `json:"health_score"`
+	AccountTier  string                 `json:"account_tier"`
+	RenewalDate  time.Time              `json:"renewal_date"`
+	Industry     string                 `json:"industry"`
 	CustomFields map[string]interface{} `json:"custom_fields"`
 }
 
@@ -71,6 +86,19 @@ func (manager companyManager) All() (CompanySlice, error) {
 			continue
 		}
 		break
+	}
+	return output, nil
+}
+
+func (manager companyManager) Create(company CreateCompany) (Company, error) {
+	output := Company{}
+	jsonb, err := json.Marshal(company)
+	if err != nil {
+		return output, nil
+	}
+	err = manager.client.postJSON(endpoints.companies.create, jsonb, &output, http.StatusCreated)
+	if err != nil {
+		return Company{}, err
 	}
 	return output, nil
 }

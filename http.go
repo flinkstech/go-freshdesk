@@ -104,3 +104,26 @@ func (c *apiClient) getNextLink(headers http.Header) (string, bool) {
 	}
 	return "", false
 }
+
+func (c *apiClient) delete(path string) error {
+	httpClient := &http.Client{}
+	req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("https://%s.freshdesk.com%s", c.domain, path), nil)
+	if err != nil {
+		return err
+	}
+
+	req.SetBasicAuth(c.apiKey, "X")
+	req.Header.Add("Content-type", "application/json")
+
+	res, err := httpClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != 200 {
+		return fmt.Errorf("received status code %d (200 expected)", res.StatusCode)
+	}
+
+	return nil
+}

@@ -161,3 +161,7 @@ func (folder Folder) Articles() (ArticleSlice, error) {
 	}
 	return outputWithClient, nil
 }
+
+func (article Article) Delete() error {
+	return article.client.delete(endpoints.solutions.articles.delete(article.ID))
+}
