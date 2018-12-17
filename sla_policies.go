@@ -62,21 +62,9 @@ func (slice SLAPolicySlice) Print() {
 
 func (manager slaPolicyManager) All() (SLAPolicySlice, error) {
 	output := SLAPolicySlice{}
-	headers, err := manager.client.get(endpoints.slaPolicies.all, &output)
+	_, err := manager.client.get(endpoints.slaPolicies.all, &output)
 	if err != nil {
 		return SLAPolicySlice{}, err
-	}
-	for {
-		if nextPage, ok := manager.client.getNextLink(headers); ok {
-			nextSlice := SLAPolicySlice{}
-			headers, err = manager.client.get(nextPage, &nextSlice)
-			if err != nil {
-				return SLAPolicySlice{}, err
-			}
-			output = append(output, nextSlice...)
-			continue
-		}
-		break
 	}
 	outputWithClient := SLAPolicySlice{}
 	for _, policy := range output {

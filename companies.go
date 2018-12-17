@@ -10,6 +10,7 @@ import (
 type CompanyManager interface {
 	All() (CompanySlice, error)
 	Create(CreateCompany) (Company, error)
+	Update(int, CreateCompany) (Company, error)
 }
 
 type companyManager struct {
@@ -71,21 +72,9 @@ func (c CompanySlice) Print() {
 
 func (manager companyManager) All() (CompanySlice, error) {
 	output := CompanySlice{}
-	headers, err := manager.client.get(endpoints.companies.all, &output)
+	_, err := manager.client.get(endpoints.companies.all, &output)
 	if err != nil {
 		return CompanySlice{}, err
-	}
-	for {
-		if nextPage, ok := manager.client.getNextLink(headers); ok {
-			nextSlice := CompanySlice{}
-			headers, err = manager.client.get(nextPage, &nextSlice)
-			if err != nil {
-				return CompanySlice{}, err
-			}
-			output = append(output, nextSlice...)
-			continue
-		}
-		break
 	}
 	return output, nil
 }
@@ -97,6 +86,19 @@ func (manager companyManager) Create(company CreateCompany) (Company, error) {
 		return output, nil
 	}
 	err = manager.client.postJSON(endpoints.companies.create, jsonb, &output, http.StatusCreated)
+	if err != nil {
+		return Company{}, err
+	}
+	return output, nil
+}
+
+func (manager companyManager) Update(id int, company CreateCompany) (Company, error) {
+	output := Company{}
+	jsonb, err := json.Marshal(company)
+	if err != nil {
+		return output, nil
+	}
+	err = manager.client.postJSON(endpoints.companies.update(id), jsonb, &output, http.StatusOK)
 	if err != nil {
 		return Company{}, err
 	}

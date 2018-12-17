@@ -97,12 +97,12 @@ func (c *apiClient) get(path string, out interface{}) (http.Header, error) {
 	return res.Header, err
 }
 
-func (c *apiClient) getNextLink(headers http.Header) (string, bool) {
+func (c *apiClient) getNextLink(headers http.Header) string {
 	link := headers.Get("link")
 	if link != "" {
-		return strings.TrimPrefix(strings.TrimSuffix(link, ">; rel=\"next\""), fmt.Sprintf("<https://%s.freshdesk.com", c.domain)), true
+		return strings.TrimPrefix(strings.TrimSuffix(link, ">; rel=\"next\""), fmt.Sprintf("<https://%s.freshdesk.com", c.domain))
 	}
-	return "", false
+	return ""
 }
 
 func (c *apiClient) delete(path string) error {

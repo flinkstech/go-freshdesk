@@ -2,18 +2,28 @@ package freshdesk
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/flinkstech/go-freshdesk/querybuilder"
 )
 
 type TicketManager interface {
-	All() (TicketSlice, error)
+	All() (TicketResults, error)
 	Create(CreateTicket) (Ticket, error)
+	Search(querybuilder.Query) (TicketResults, error)
 }
 
 type ticketManager struct {
 	client *apiClient
+}
+
+type TicketResults struct {
+	next    string
+	Results TicketSlice
+	client  *apiClient
 }
 
 func newTicketManager(client *apiClient) ticketManager {
@@ -148,25 +158,16 @@ func (s TicketSlice) Print() {
 	}
 }
 
-func (manager ticketManager) All() (TicketSlice, error) {
+func (manager ticketManager) All() (TicketResults, error) {
 	output := TicketSlice{}
 	headers, err := manager.client.get(endpoints.tickets.all, &output)
 	if err != nil {
-		return TicketSlice{}, err
+		return TicketResults{}, err
 	}
-	for {
-		if nextPage, ok := manager.client.getNextLink(headers); ok {
-			nextSlice := TicketSlice{}
-			headers, err = manager.client.get(nextPage, &nextSlice)
-			if err != nil {
-				return TicketSlice{}, err
-			}
-			output = append(output, nextSlice...)
-			continue
-		}
-		break
-	}
-	return output, nil
+	return TicketResults{
+		Results: output,
+		next:    manager.client.getNextLink(headers),
+	}, nil
 }
 
 func (manager ticketManager) Create(ticket CreateTicket) (Ticket, error) {
@@ -180,4 +181,47 @@ func (manager ticketManager) Create(ticket CreateTicket) (Ticket, error) {
 		return Ticket{}, err
 	}
 	return output, nil
+}
+
+func (manager ticketManager) Search(query querybuilder.Query) (TicketResults, error) {
+	output := TicketSlice{}
+	headers, err := manager.client.get(endpoints.tickets.search(query.URLSafe()), &output)
+	if err != nil {
+		return TicketResults{}, err
+	}
+	return TicketResults{
+		Results: output,
+		next:    manager.client.getNextLink(headers),
+	}, nil
+}
+
+func (results TicketResults) Next() (TicketResults, error) {
+	if results.next == "" {
+		return TicketResults{}, errors.New("no more tickets")
+	}
+	nextSlice := TicketResults{}
+	_, err := results.client.get(results.next, &nextSlice)
+	if err != nil {
+		return TicketResults{}, err
+	}
+	return nextSlice, nil
+}
+
+func (results TicketResults) FilterTags(tags ...string) {
+	filtered := TicketSlice{}
+	for _, ticket := range results.Results {
+		_filterFlag := false
+		for _, ticketTag := range ticket.Tags {
+			for _, filterTag := range tags {
+				if ticketTag == filterTag {
+					_filterFlag = true
+				}
+			}
+		}
+		if _filterFlag {
+			continue
+		}
+		filtered = append(filtered, ticket)
+	}
+	results.Results = filtered
 }

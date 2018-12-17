@@ -5,11 +5,13 @@ import "fmt"
 type companyEndpoints struct {
 	all    string
 	create string
+	update func(int) string
 }
 
 type ticketEndpoints struct {
 	all    string
 	create string
+	search func(string) string
 }
 
 type slaPolicyEndpoints struct {
@@ -46,6 +48,7 @@ var endpoints = struct {
 	companies: companyEndpoints{
 		all:    "/api/v2/companies",
 		create: "/api/v2/companies",
+		update: func(id int) string { return fmt.Sprintf("/api/v2/companies/%d", id) },
 	},
 	slaPolicies: slaPolicyEndpoints{
 		all:    "/api/v2/sla_policies",
@@ -67,5 +70,6 @@ var endpoints = struct {
 	tickets: ticketEndpoints{
 		all:    "/api/v2/tickets",
 		create: "/api/v2/tickets",
+		search: func(query string) string { return fmt.Sprintf("/api/v2/tickets?query=%s", query) },
 	},
 }
