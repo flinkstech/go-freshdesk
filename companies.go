@@ -98,7 +98,7 @@ func (manager companyManager) Update(id int, company CreateCompany) (Company, er
 	if err != nil {
 		return output, nil
 	}
-	err = manager.client.postJSON(endpoints.companies.update(id), jsonb, &output, http.StatusOK)
+	err = manager.client.put(endpoints.companies.update(id), jsonb, &output, http.StatusOK)
 	if err != nil {
 		return Company{}, err
 	}
