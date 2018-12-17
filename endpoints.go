@@ -2,34 +2,32 @@ package freshdesk
 
 import "fmt"
 
-type companyEndpoints struct {
-	all    string
-	create string
-	update func(int) string
-}
-
-type ticketEndpoints struct {
-	all    string
-	create string
-	search func(string) string
-}
-
-type slaPolicyEndpoints struct {
-	all    string
-	update func(int) string
+type articleEndpoints struct {
+	delete func(int) string
+	get    func(int) string
 }
 
 type categoryEndpoints struct {
 	folders func(int) string
 }
 
+type companyEndpoints struct {
+	all    string
+	create string
+	update func(int) string
+}
+
 type folderEndpoints struct {
 	articles func(int) string
 }
 
-type articleEndpoints struct {
-	delete func(int) string
-	get    func(int) string
+type groupEndpoints struct {
+	all string
+}
+
+type slaPolicyEndpoints struct {
+	all    string
+	update func(int) string
 }
 
 type solutionEndpoints struct {
@@ -39,8 +37,15 @@ type solutionEndpoints struct {
 	articles   articleEndpoints
 }
 
+type ticketEndpoints struct {
+	all    string
+	create string
+	search func(string) string
+}
+
 var endpoints = struct {
 	companies   companyEndpoints
+	groups      groupEndpoints
 	slaPolicies slaPolicyEndpoints
 	solutions   solutionEndpoints
 	tickets     ticketEndpoints
@@ -49,6 +54,9 @@ var endpoints = struct {
 		all:    "/api/v2/companies",
 		create: "/api/v2/companies",
 		update: func(id int) string { return fmt.Sprintf("/api/v2/companies/%d", id) },
+	},
+	groups: groupEndpoints{
+		all: "/api/v2/groups",
 	},
 	slaPolicies: slaPolicyEndpoints{
 		all:    "/api/v2/sla_policies",
