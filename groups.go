@@ -6,7 +6,7 @@ import (
 )
 
 type GroupManager interface {
-	All() (CompanySlice, error)
+	All() (GroupSlice, error)
 }
 
 type groupManager struct {
@@ -53,4 +53,14 @@ func (manager groupManager) All() (GroupSlice, error) {
 		return GroupSlice{}, err
 	}
 	return output, nil
+}
+
+func (groups GroupSlice) SearchName(name string) (Group, error) {
+	for _, group := range groups {
+		if group.Name == name {
+			return group, nil
+		}
+	}
+
+	return Group{}, fmt.Errorf("no group found with name %s", name)
 }
