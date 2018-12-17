@@ -4,7 +4,7 @@ import (
 	"log"
 )
 
-type apiClient struct {
+type ApiClient struct {
 	domain      string
 	apiKey      string
 	logger      *log.Logger
@@ -23,8 +23,8 @@ func EmptyOptions() *ClientOptions {
 }
 
 // Init initializes the package
-func Init(domain, apiKey string, options *ClientOptions) apiClient {
-	client := apiClient{
+func Init(domain, apiKey string, options *ClientOptions) ApiClient {
+	client := ApiClient{
 		domain: domain,
 		apiKey: apiKey,
 	}

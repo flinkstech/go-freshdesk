@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func (c *apiClient) postJSON(path string, requestBody []byte, out interface{}, expectedStatus int) error {
+func (c *ApiClient) postJSON(path string, requestBody []byte, out interface{}, expectedStatus int) error {
 	httpClient := &http.Client{}
 	req, _ := http.NewRequest("POST", fmt.Sprintf("https://%s.freshdesk.com%s", c.domain, path), bytes.NewReader(requestBody))
 
@@ -39,7 +39,7 @@ func (c *apiClient) postJSON(path string, requestBody []byte, out interface{}, e
 	return err
 }
 
-func (c *apiClient) put(path string, requestBody []byte, out interface{}, expectedStatus int) error {
+func (c *ApiClient) put(path string, requestBody []byte, out interface{}, expectedStatus int) error {
 	httpClient := &http.Client{}
 	if c.logger != nil {
 		c.logger.Println(string(requestBody))
@@ -72,7 +72,7 @@ func (c *apiClient) put(path string, requestBody []byte, out interface{}, expect
 	return err
 }
 
-func (c *apiClient) get(path string, out interface{}) (http.Header, error) {
+func (c *ApiClient) get(path string, out interface{}) (http.Header, error) {
 	httpClient := &http.Client{}
 	req, err := http.NewRequest("GET", fmt.Sprintf("https://%s.freshdesk.com%s", c.domain, path), nil)
 	if err != nil {
@@ -97,7 +97,7 @@ func (c *apiClient) get(path string, out interface{}) (http.Header, error) {
 	return res.Header, err
 }
 
-func (c *apiClient) getNextLink(headers http.Header) string {
+func (c *ApiClient) getNextLink(headers http.Header) string {
 	link := headers.Get("link")
 	if link != "" {
 		return strings.TrimPrefix(strings.TrimSuffix(link, ">; rel=\"next\""), fmt.Sprintf("<https://%s.freshdesk.com", c.domain))
@@ -105,7 +105,7 @@ func (c *apiClient) getNextLink(headers http.Header) string {
 	return ""
 }
 
-func (c *apiClient) delete(path string) error {
+func (c *ApiClient) delete(path string) error {
 	httpClient := &http.Client{}
 	req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("https://%s.freshdesk.com%s", c.domain, path), nil)
 	if err != nil {

@@ -14,10 +14,10 @@ type CompanyManager interface {
 }
 
 type companyManager struct {
-	client *apiClient
+	client *ApiClient
 }
 
-func newCompanyManager(client *apiClient) companyManager {
+func newCompanyManager(client *ApiClient) companyManager {
 	return companyManager{
 		client,
 	}

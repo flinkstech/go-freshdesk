@@ -10,10 +10,10 @@ type SolutionManager interface {
 }
 
 type solutionManager struct {
-	client *apiClient
+	client *ApiClient
 }
 
-func newSolutionManager(client *apiClient) solutionManager {
+func newSolutionManager(client *ApiClient) solutionManager {
 	return solutionManager{
 		client,
 	}
@@ -26,7 +26,7 @@ type Category struct {
 	VisibleInPortals []int     `json:"visible_in_portals"`
 	CreatedAt        time.Time `json:"created_at"`
 	UpdatedAt        time.Time `json:"updated_at"`
-	client           *apiClient
+	client           *ApiClient
 }
 
 type CategorySlice []Category
@@ -57,7 +57,7 @@ type Folder struct {
 	CompanyIDs  []int     `json:"company_ids"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
-	client      *apiClient
+	client      *ApiClient
 }
 
 type FolderSlice []Folder
@@ -97,7 +97,7 @@ type Article struct {
 	Type            int               `json:"updated_at"`
 	CreatedAt       time.Time         `json:"created_at"`
 	UpdatedAt       time.Time         `json:"updated_at"`
-	client          *apiClient
+	client          *ApiClient
 }
 
 type ArticleSlice []Article

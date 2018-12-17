@@ -12,10 +12,10 @@ type SLAPolicyManager interface {
 }
 
 type slaPolicyManager struct {
-	client *apiClient
+	client *ApiClient
 }
 
-func newSLAPolicyManager(client *apiClient) slaPolicyManager {
+func newSLAPolicyManager(client *ApiClient) slaPolicyManager {
 	return slaPolicyManager{
 		client,
 	}
@@ -29,7 +29,7 @@ type SLAPolicy struct {
 	Active       bool             `json:"active,omitempty"`
 	IsDefault    bool             `json:"is_default,omitempty"`
 	Position     int              `json:"position,omitempty"`
-	client       *apiClient
+	client       *ApiClient
 }
 
 type SLAPolicyApplicableCompanyList struct {

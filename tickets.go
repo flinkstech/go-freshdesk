@@ -17,16 +17,16 @@ type TicketManager interface {
 }
 
 type ticketManager struct {
-	client *apiClient
+	client *ApiClient
 }
 
 type TicketResults struct {
 	next    string
 	Results TicketSlice
-	client  *apiClient
+	client  *ApiClient
 }
 
-func newTicketManager(client *apiClient) ticketManager {
+func newTicketManager(client *ApiClient) ticketManager {
 	return ticketManager{
 		client,
 	}
