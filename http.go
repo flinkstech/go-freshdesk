@@ -11,6 +11,9 @@ import (
 
 func (c *ApiClient) postJSON(path string, requestBody []byte, out interface{}, expectedStatus int) error {
 	httpClient := &http.Client{}
+	if c.logger != nil {
+		c.logger.Println(string(requestBody))
+	}
 	req, _ := http.NewRequest("POST", fmt.Sprintf("https://%s.freshdesk.com%s", c.domain, path), bytes.NewReader(requestBody))
 
 	req.SetBasicAuth(c.apiKey, "X")

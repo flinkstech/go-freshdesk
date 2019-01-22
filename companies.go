@@ -40,13 +40,13 @@ type Company struct {
 
 type CreateCompany struct {
 	Name         string                 `json:"name"`
-	Description  string                 `json:"description"`
-	Domains      []string               `json:"domains"`
-	Note         string                 `json:"note"`
-	HealthScore  string                 `json:"health_score"`
-	AccountTier  string                 `json:"account_tier"`
-	RenewalDate  time.Time              `json:"renewal_date"`
-	Industry     string                 `json:"industry"`
+	Description  string                 `json:"description,omitempty"`
+	Domains      []string               `json:"domains,omitempty"`
+	Note         string                 `json:"note,omitempty"`
+	HealthScore  string                 `json:"health_score,omitempty"`
+	AccountTier  string                 `json:"account_tier,omitempty"`
+	RenewalDate  *time.Time             `json:"renewal_date,omitempty"`
+	Industry     string                 `json:"industry,omitempty"`
 	CustomFields map[string]interface{} `json:"custom_fields"`
 }
 
@@ -72,9 +72,21 @@ func (c CompanySlice) Print() {
 
 func (manager companyManager) All() (CompanySlice, error) {
 	output := CompanySlice{}
-	_, err := manager.client.get(endpoints.companies.all, &output)
+	headers, err := manager.client.get(endpoints.companies.all, &output)
 	if err != nil {
 		return CompanySlice{}, err
+	}
+	nextSlice := CompanySlice{}
+	for {
+		nextLink := manager.client.getNextLink(headers)
+		if nextLink == "" {
+			break
+		}
+		headers, err = manager.client.get(nextLink, &nextSlice)
+		if err != nil {
+			return CompanySlice{}, err
+		}
+		output = append(output, nextSlice...)
 	}
 	return output, nil
 }
