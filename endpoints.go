@@ -2,6 +2,9 @@ package freshdesk
 
 import "fmt"
 
+type agentEndpoints struct {
+	all string
+}
 type articleEndpoints struct {
 	delete func(int) string
 	get    func(int) string
@@ -15,6 +18,10 @@ type companyEndpoints struct {
 	all    string
 	create string
 	update func(int) string
+}
+
+type contactEndpoints struct {
+	all string
 }
 
 type folderEndpoints struct {
@@ -44,16 +51,24 @@ type ticketEndpoints struct {
 }
 
 var endpoints = struct {
+	agents      agentEndpoints
 	companies   companyEndpoints
+	contacts    contactEndpoints
 	groups      groupEndpoints
 	slaPolicies slaPolicyEndpoints
 	solutions   solutionEndpoints
 	tickets     ticketEndpoints
 }{
+	agents: agentEndpoints{
+		all: "/api/v2/agents",
+	},
 	companies: companyEndpoints{
 		all:    "/api/v2/companies",
 		create: "/api/v2/companies",
 		update: func(id int) string { return fmt.Sprintf("/api/v2/companies/%d", id) },
+	},
+	contacts: contactEndpoints{
+		all: "/api/v2/contacts",
 	},
 	groups: groupEndpoints{
 		all: "/api/v2/groups",
@@ -78,6 +93,6 @@ var endpoints = struct {
 	tickets: ticketEndpoints{
 		all:    "/api/v2/tickets",
 		create: "/api/v2/tickets",
-		search: func(query string) string { return fmt.Sprintf("/api/v2/tickets?query=%s", query) },
+		search: func(query string) string { return fmt.Sprintf("/api/v2/search/tickets?%s", query) },
 	},
 }

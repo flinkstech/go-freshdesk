@@ -18,6 +18,7 @@ func (c *ApiClient) postJSON(path string, requestBody []byte, out interface{}, e
 
 	req.SetBasicAuth(c.apiKey, "X")
 	req.Header.Add("Content-type", "application/json")
+	c.logReq(req)
 
 	res, err := httpClient.Do(req)
 	if err != nil {
@@ -51,6 +52,7 @@ func (c *ApiClient) put(path string, requestBody []byte, out interface{}, expect
 
 	req.SetBasicAuth(c.apiKey, "X")
 	req.Header.Add("Content-type", "application/json")
+	c.logReq(req)
 
 	res, err := httpClient.Do(req)
 	if err != nil {
@@ -83,7 +85,7 @@ func (c *ApiClient) get(path string, out interface{}) (http.Header, error) {
 	}
 
 	req.SetBasicAuth(c.apiKey, "X")
-	req.Header.Add("Content-type", "application/json")
+	c.logReq(req)
 
 	res, err := httpClient.Do(req)
 	if err != nil {
@@ -91,11 +93,9 @@ func (c *ApiClient) get(path string, out interface{}) (http.Header, error) {
 	}
 	defer res.Body.Close()
 
-	if res.StatusCode != 200 {
-		return nil, fmt.Errorf("received status code %d (200 expected)", res.StatusCode)
-	}
+	c.logRes(res)
 
-	err = json.NewDecoder(res.Body).Decode(out)
+	json.NewDecoder(res.Body).Decode(out)
 
 	return res.Header, err
 }
@@ -117,6 +117,7 @@ func (c *ApiClient) delete(path string) error {
 
 	req.SetBasicAuth(c.apiKey, "X")
 	req.Header.Add("Content-type", "application/json")
+	c.logReq(req)
 
 	res, err := httpClient.Do(req)
 	if err != nil {

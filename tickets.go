@@ -166,6 +166,7 @@ func (manager ticketManager) All() (TicketResults, error) {
 	}
 	return TicketResults{
 		Results: output,
+		client:  manager.client,
 		next:    manager.client.getNextLink(headers),
 	}, nil
 }
@@ -184,13 +185,16 @@ func (manager ticketManager) Create(ticket CreateTicket) (Ticket, error) {
 }
 
 func (manager ticketManager) Search(query querybuilder.Query) (TicketResults, error) {
-	output := TicketSlice{}
+	output := struct {
+		Slice TicketSlice `json:"results"`
+	}{}
 	headers, err := manager.client.get(endpoints.tickets.search(query.URLSafe()), &output)
 	if err != nil {
 		return TicketResults{}, err
 	}
 	return TicketResults{
-		Results: output,
+		Results: output.Slice,
+		client:  manager.client,
 		next:    manager.client.getNextLink(headers),
 	}, nil
 }
@@ -207,7 +211,7 @@ func (results TicketResults) Next() (TicketResults, error) {
 	return nextSlice, nil
 }
 
-func (results TicketResults) FilterTags(tags ...string) {
+func (results *TicketResults) FilterTags(tags ...string) *TicketResults {
 	filtered := TicketSlice{}
 	for _, ticket := range results.Results {
 		_filterFlag := false
@@ -215,6 +219,7 @@ func (results TicketResults) FilterTags(tags ...string) {
 			for _, filterTag := range tags {
 				if ticketTag == filterTag {
 					_filterFlag = true
+					break
 				}
 			}
 		}
@@ -224,4 +229,56 @@ func (results TicketResults) FilterTags(tags ...string) {
 		filtered = append(filtered, ticket)
 	}
 	results.Results = filtered
+	return results
+}
+
+func (results *TicketResults) FilterTypes(filterTypes ...string) *TicketResults {
+	filtered := TicketSlice{}
+	for _, ticket := range results.Results {
+		_filterFlag := false
+		for _, filterType := range filterTypes {
+			if ticket.Type == filterType {
+				_filterFlag = true
+				break
+			}
+		}
+		if _filterFlag {
+			continue
+		}
+		filtered = append(filtered, ticket)
+	}
+	results.Results = filtered
+	return results
+}
+
+func (results *TicketResults) FilterGroups(filterGroups ...string) *TicketResults {
+	groups, _ := results.client.Groups.All()
+	filterIDs := []int{}
+	for _, group := range groups {
+		for _, filterGroup := range filterGroups {
+			if group.Name == filterGroup {
+				filterIDs = append(filterIDs, group.ID)
+			}
+		}
+	}
+	return results.FilterGroupsID(filterIDs...)
+}
+
+func (results *TicketResults) FilterGroupsID(filterIDs ...int) *TicketResults {
+	filtered := TicketSlice{}
+	for _, ticket := range results.Results {
+		_filterFlag := false
+		for _, filterID := range filterIDs {
+			if ticket.ID == filterID {
+				_filterFlag = true
+				break
+			}
+		}
+		if _filterFlag {
+			continue
+		}
+		filtered = append(filtered, ticket)
+	}
+	results.Results = filtered
+	return results
 }

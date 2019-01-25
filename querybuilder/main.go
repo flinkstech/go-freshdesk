@@ -2,6 +2,8 @@ package querybuilder
 
 import (
 	"fmt"
+	"net/url"
+	"strings"
 )
 
 type Query struct {
@@ -9,7 +11,16 @@ type Query struct {
 }
 
 func (query Query) URLSafe() string {
-	return query.query
+	v := url.Values{}
+	var clean string
+	if query.query[0] == byte('(') {
+		clean = query.query[1:]
+	}
+	if clean[len(clean)-1] == byte(')') {
+		clean = clean[:len(clean)-1]
+	}
+	v["query"] = []string{fmt.Sprintf(`"%s"`, clean)}
+	return strings.Replace(v.Encode(), "+", "%20", -1)
 }
 
 type leftQuery struct {
@@ -68,13 +79,25 @@ func (left leftQuery) Is(value string) Query {
 	}
 }
 
-func (left leftQuery) GreaterThan(value string) Query {
+func (left leftQuery) GreaterThan(value int) Query {
+	return Query{
+		query: fmt.Sprintf("%s:>%d", left.leftPart, value),
+	}
+}
+
+func (left leftQuery) LessThan(value int) Query {
+	return Query{
+		query: fmt.Sprintf("%s:<%d", left.leftPart, value),
+	}
+}
+
+func (left leftQuery) GreaterThanString(value string) Query {
 	return Query{
 		query: fmt.Sprintf("%s:>'%s'", left.leftPart, value),
 	}
 }
 
-func (left leftQuery) LessThan(value string) Query {
+func (left leftQuery) LessThanString(value string) Query {
 	return Query{
 		query: fmt.Sprintf("%s:<'%s'", left.leftPart, value),
 	}
