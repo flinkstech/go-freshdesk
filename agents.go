@@ -53,12 +53,12 @@ func (manager agentManager) All() (AgentSlice, error) {
 	if err != nil {
 		return AgentSlice{}, err
 	}
-	nextSlice := AgentSlice{}
 	for {
 		nextLink := manager.client.getNextLink(headers)
 		if nextLink == "" {
 			break
 		}
+		nextSlice := AgentSlice{}
 		headers, err = manager.client.get(nextLink, &nextSlice)
 		if err != nil {
 			return AgentSlice{}, err

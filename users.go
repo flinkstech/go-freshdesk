@@ -66,12 +66,12 @@ func (manager userManager) All() (UserSlice, error) {
 	if err != nil {
 		return UserSlice{}, err
 	}
-	nextSlice := UserSlice{}
 	for {
 		nextLink := manager.client.getNextLink(headers)
 		if nextLink == "" {
 			break
 		}
+		nextSlice := UserSlice{}
 		headers, err = manager.client.get(nextLink, &nextSlice)
 		if err != nil {
 			return UserSlice{}, err
