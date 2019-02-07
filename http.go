@@ -18,7 +18,7 @@ func (c *ApiClient) postJSON(path string, requestBody []byte, out interface{}, e
 
 	req.SetBasicAuth(c.apiKey, "X")
 	req.Header.Add("Content-type", "application/json")
-	c.logReq(req)
+	//c.logReq(req)
 
 	res, err := httpClient.Do(req)
 	if err != nil {
@@ -48,11 +48,11 @@ func (c *ApiClient) put(path string, requestBody []byte, out interface{}, expect
 	if c.logger != nil {
 		c.logger.Println(string(requestBody))
 	}
-	req, _ := http.NewRequest("PUT", fmt.Sprintf("https://%s.freshdesk.com%s", c.domain, path), bytes.NewReader(requestBody))
+	req, _ := http.NewRequest(http.MethodPut, fmt.Sprintf("https://%s.freshdesk.com%s", c.domain, path), bytes.NewReader(requestBody))
 
 	req.SetBasicAuth(c.apiKey, "X")
 	req.Header.Add("Content-type", "application/json")
-	c.logReq(req)
+	//c.logReq(req)
 
 	res, err := httpClient.Do(req)
 	if err != nil {
@@ -65,9 +65,7 @@ func (c *ApiClient) put(path string, requestBody []byte, out interface{}, expect
 			body, _ := ioutil.ReadAll(res.Body)
 			var jsonBuffer bytes.Buffer
 			json.Indent(&jsonBuffer, body, "", "\t")
-			if c.logger != nil {
-				c.logger.Println(string(jsonBuffer.Bytes()))
-			}
+			c.logger.Println(string(jsonBuffer.Bytes()))
 		}
 		return fmt.Errorf("received status code %d (%d expected)", res.StatusCode, expectedStatus)
 	}
@@ -85,7 +83,7 @@ func (c *ApiClient) get(path string, out interface{}) (http.Header, error) {
 	}
 
 	req.SetBasicAuth(c.apiKey, "X")
-	c.logReq(req)
+	//c.logReq(req)
 
 	res, err := httpClient.Do(req)
 	if err != nil {
@@ -117,7 +115,7 @@ func (c *ApiClient) delete(path string) error {
 
 	req.SetBasicAuth(c.apiKey, "X")
 	req.Header.Add("Content-type", "application/json")
-	c.logReq(req)
+	//c.logReq(req)
 
 	res, err := httpClient.Do(req)
 	if err != nil {

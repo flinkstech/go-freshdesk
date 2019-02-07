@@ -117,7 +117,7 @@ func (policy SLAPolicy) EnsureCompanyPresent(companyID int) {
 		}
 	} else {
 		if policy.client.logger != nil {
-			policy.client.logger.Println("hello", string(jsonb))
+			policy.client.logger.Println(string(jsonb))
 		}
 	}
 }
@@ -163,7 +163,7 @@ func (policy SLAPolicy) EnsureCompanyAbsent(companyID int) {
 		}
 	} else {
 		if policy.client.logger != nil {
-			policy.client.logger.Println("hello", string(jsonb))
+			policy.client.logger.Println(string(jsonb))
 		}
 	}
 }

@@ -39,7 +39,7 @@ type Company struct {
 }
 
 type CreateCompany struct {
-	Name         string                 `json:"name"`
+	Name         string                 `json:"name,omitempty"`
 	Description  string                 `json:"description,omitempty"`
 	Domains      []string               `json:"domains,omitempty"`
 	Note         string                 `json:"note,omitempty"`
@@ -47,7 +47,7 @@ type CreateCompany struct {
 	AccountTier  string                 `json:"account_tier,omitempty"`
 	RenewalDate  *time.Time             `json:"renewal_date,omitempty"`
 	Industry     string                 `json:"industry,omitempty"`
-	CustomFields map[string]interface{} `json:"custom_fields"`
+	CustomFields map[string]interface{} `json:"custom_fields,omitempty"`
 }
 
 type CompanySlice []Company
@@ -108,7 +108,7 @@ func (manager companyManager) Update(id int, company CreateCompany) (Company, er
 	output := Company{}
 	jsonb, err := json.Marshal(company)
 	if err != nil {
-		return output, nil
+		return output, err
 	}
 	err = manager.client.put(endpoints.companies.update(id), jsonb, &output, http.StatusOK)
 	if err != nil {
