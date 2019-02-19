@@ -72,10 +72,10 @@ func (c *ApiClient) put(path string, requestBody []byte, out interface{}, expect
 	if res.StatusCode != expectedStatus {
 		body, err := ioutil.ReadAll(res.Body)
 		var apiError string
-		if err != nil {
+		if err == nil {
 			var jsonBuffer bytes.Buffer
 			err := json.Indent(&jsonBuffer, body, "", "\t")
-			if err != nil {
+			if err == nil {
 				apiError = string(jsonBuffer.Bytes())
 			}
 		}
