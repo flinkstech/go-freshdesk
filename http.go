@@ -27,15 +27,24 @@ func (c *ApiClient) postJSON(path string, requestBody []byte, out interface{}, e
 	defer res.Body.Close()
 
 	if res.StatusCode != expectedStatus {
-		if res.StatusCode == http.StatusBadRequest && c.logger != nil {
-			body, _ := ioutil.ReadAll(res.Body)
+		body, err := ioutil.ReadAll(res.Body)
+		var apiError string
+		if err != nil {
 			var jsonBuffer bytes.Buffer
-			json.Indent(&jsonBuffer, body, "", "\t")
-			if c.logger != nil {
-				c.logger.Println(string(jsonBuffer.Bytes()))
+			err := json.Indent(&jsonBuffer, body, "", "\t")
+			if err != nil {
+				apiError = string(jsonBuffer.Bytes())
 			}
 		}
-		return fmt.Errorf("received status code %d (%d expected)", res.StatusCode, expectedStatus)
+		if res.StatusCode == http.StatusBadRequest && c.logger != nil {
+			if c.logger != nil {
+				c.logger.Println(apiError)
+			}
+		}
+		return APIError{
+			fmt.Errorf("received status code %d (%d expected)", res.StatusCode, expectedStatus),
+			apiError,
+		}
 	}
 
 	err = json.NewDecoder(res.Body).Decode(out)
@@ -61,13 +70,24 @@ func (c *ApiClient) put(path string, requestBody []byte, out interface{}, expect
 	defer res.Body.Close()
 
 	if res.StatusCode != expectedStatus {
-		if res.StatusCode == http.StatusBadRequest && c.logger != nil {
-			body, _ := ioutil.ReadAll(res.Body)
+		body, err := ioutil.ReadAll(res.Body)
+		var apiError string
+		if err != nil {
 			var jsonBuffer bytes.Buffer
-			json.Indent(&jsonBuffer, body, "", "\t")
-			c.logger.Println(string(jsonBuffer.Bytes()))
+			err := json.Indent(&jsonBuffer, body, "", "\t")
+			if err != nil {
+				apiError = string(jsonBuffer.Bytes())
+			}
 		}
-		return fmt.Errorf("received status code %d (%d expected)", res.StatusCode, expectedStatus)
+		if res.StatusCode == http.StatusBadRequest && c.logger != nil {
+			if c.logger != nil {
+				c.logger.Println(apiError)
+			}
+		}
+		return APIError{
+			fmt.Errorf("received status code %d (%d expected)", res.StatusCode, expectedStatus),
+			apiError,
+		}
 	}
 
 	err = json.NewDecoder(res.Body).Decode(out)
