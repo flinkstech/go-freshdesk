@@ -1,1 +1,1 @@
-module go-freshdesk
+module github.com/flinkstech/go-freshdesk
