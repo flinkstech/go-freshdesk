@@ -269,7 +269,7 @@ func (results *TicketResults) FilterGroupsID(filterIDs ...int) *TicketResults {
 	for _, ticket := range results.Results {
 		_filterFlag := false
 		for _, filterID := range filterIDs {
-			if ticket.ID == filterID {
+			if ticket.GroupID == filterID {
 				_filterFlag = true
 				break
 			}
