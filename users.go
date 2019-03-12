@@ -3,10 +3,13 @@ package freshdesk
 import (
 	"fmt"
 	"time"
+
+	"github.com/flinkstech/go-freshdesk/querybuilder"
 )
 
 type UserManager interface {
 	All() (UserSlice, error)
+	Search(querybuilder.Query) (UserResults, error)
 }
 
 type userManager struct {
@@ -17,6 +20,12 @@ func newUserManager(client *ApiClient) userManager {
 	return userManager{
 		client,
 	}
+}
+
+type UserResults struct {
+	next    string
+	Results UserSlice
+	client  *ApiClient
 }
 
 type User struct {
@@ -79,4 +88,19 @@ func (manager userManager) All() (UserSlice, error) {
 		output = append(output, nextSlice...)
 	}
 	return output, nil
+}
+
+func (manager userManager) Search(query querybuilder.Query) (UserResults, error) {
+	output := struct {
+		Slice UserSlice `json:"results"`
+	}{}
+	headers, err := manager.client.get(endpoints.contacts.search(query.URLSafe()), &output)
+	if err != nil {
+		return UserResults{}, err
+	}
+	return UserResults{
+		Results: output.Slice,
+		client:  manager.client,
+		next:    manager.client.getNextLink(headers),
+	}, nil
 }

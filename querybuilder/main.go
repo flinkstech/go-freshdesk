@@ -12,11 +12,11 @@ type Query struct {
 
 func (query Query) URLSafe() string {
 	v := url.Values{}
-	var clean string
+	clean := query.query
 	if query.query[0] == byte('(') {
 		clean = query.query[1:]
 	}
-	if clean[len(clean)-1] == byte(')') {
+	if len(clean) > 0 && clean[len(clean)-1] == byte(')') {
 		clean = clean[:len(clean)-1]
 	}
 	v["query"] = []string{fmt.Sprintf(`"%s"`, clean)}

@@ -21,7 +21,8 @@ type companyEndpoints struct {
 }
 
 type contactEndpoints struct {
-	all string
+	all    string
+	search func(string) string
 }
 
 type folderEndpoints struct {
@@ -68,7 +69,8 @@ var endpoints = struct {
 		update: func(id int) string { return fmt.Sprintf("/api/v2/companies/%d", id) },
 	},
 	contacts: contactEndpoints{
-		all: "/api/v2/contacts",
+		all:    "/api/v2/contacts",
+		search: func(query string) string { return fmt.Sprintf("/api/v2/search/contacts?%s", query) },
 	},
 	groups: groupEndpoints{
 		all: "/api/v2/groups",
