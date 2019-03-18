@@ -103,7 +103,9 @@ func (c *ApiClient) get(path string, out interface{}) (http.Header, error) {
 	}
 
 	req.SetBasicAuth(c.apiKey, "X")
-	c.logger.Println(path)
+	if c.logger != nil {
+		c.logger.Println(path)
+	}
 
 	res, err := httpClient.Do(req)
 	if err != nil {
