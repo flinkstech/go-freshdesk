@@ -187,15 +187,38 @@ func (manager ticketManager) Create(ticket CreateTicket) (Ticket, error) {
 func (manager ticketManager) Search(query querybuilder.Query) (TicketResults, error) {
 	output := struct {
 		Slice TicketSlice `json:"results"`
+		Total int `json:"total"`
 	}{}
-	headers, err := manager.client.get(endpoints.tickets.search(query.URLSafe()), &output)
+	_, err := manager.client.get(endpoints.tickets.search(query.URLSafe()), &output)
 	if err != nil {
 		return TicketResults{}, err
 	}
+
+	page := 1
+	for {
+		if len(output.Slice) >= output.Total || page == 10 {
+			break
+		}
+		page += 1
+		nextSlice := struct {
+			Slice TicketSlice `json:"results"`
+			Total int `json:"total"`
+		}{}
+		_, err := manager.client.get(
+			fmt.Sprintf("%s&page=%d", endpoints.tickets.search(query.URLSafe()), page),
+			&nextSlice,
+		)
+		if err != nil {
+			break
+		}
+
+		output.Slice = append(output.Slice, nextSlice.Slice...)
+		output.Total = nextSlice.Total
+	}
+
 	return TicketResults{
 		Results: output.Slice,
 		client:  manager.client,
-		next:    manager.client.getNextLink(headers),
 	}, nil
 }
 
