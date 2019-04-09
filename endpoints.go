@@ -22,6 +22,7 @@ type companyEndpoints struct {
 
 type contactEndpoints struct {
 	all    string
+	create string
 	search func(string) string
 }
 
@@ -70,6 +71,7 @@ var endpoints = struct {
 	},
 	contacts: contactEndpoints{
 		all:    "/api/v2/contacts",
+		create: "/api/v2/contacts",
 		search: func(query string) string { return fmt.Sprintf("/api/v2/search/contacts?%s", query) },
 	},
 	groups: groupEndpoints{

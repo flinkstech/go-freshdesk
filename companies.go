@@ -95,7 +95,7 @@ func (manager companyManager) Create(company CreateCompany) (Company, error) {
 	output := Company{}
 	jsonb, err := json.Marshal(company)
 	if err != nil {
-		return output, nil
+		return output, err
 	}
 	err = manager.client.postJSON(endpoints.companies.create, jsonb, &output, http.StatusCreated)
 	if err != nil {

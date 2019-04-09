@@ -1,7 +1,9 @@
 package freshdesk
 
 import (
+	"encoding/json"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/flinkstech/go-freshdesk/querybuilder"
@@ -9,6 +11,7 @@ import (
 
 type UserManager interface {
 	All() (UserSlice, error)
+	Create(*User) (*User, error)
 	Search(querybuilder.Query) (UserResults, error)
 }
 
@@ -29,30 +32,30 @@ type UserResults struct {
 }
 
 type User struct {
-	ID               int                    `json:"id"`
-	Name             string                 `json:"name"`
-	Active           string                 `json:"active"`
-	Email            string                 `json:"email"`
-	JobTitle         string                 `json:"job_title"`
-	Language         string                 `json:"language"`
-	LastLoginAt      time.Time              `json:"last_login_at"`
-	Mobile           int                    `json:"mobile"`
-	Phone            int                    `json:"phone"`
-	TimeZone         string                 `json:"time_zone"`
-	CreatedAt        time.Time              `json:"created_at"`
-	UpdatedAt        time.Time              `json:"updated_at"`
-	Address          string                 `json:"address"`
-	Avatar           interface{}            `json:"avatar"`
-	CompanyID        int                    `json:"company_id"`
-	ViewAllTickets   bool                   `json:"view_all_tickets"`
-	CustomFields     map[string]interface{} `json:"custom_fields"`
-	Deleted          bool                   `json:"deleted"`
-	Description      string                 `json:"description"`
-	OtherEmails      []string               `json:"other_emails"`
-	Tags             []string               `json:"tags"`
-	TwitterID        string                 `json:"twitter_id"`
-	UniqueExternalID string                 `json:"unique_external_id"`
-	OtherCompanies   []string               `json:"other_companies"`
+	ID               int                    `json:"id,omitempty"`
+	Name             string                 `json:"name,omitempty"`
+	Active           string                 `json:"active,omitempty"`
+	Email            string                 `json:"email,omitempty"`
+	JobTitle         string                 `json:"job_title,omitempty"`
+	Language         string                 `json:"language,omitempty"`
+	LastLoginAt      time.Time              `json:"last_login_at,omitempty"`
+	Mobile           int                    `json:"mobile,omitempty"`
+	Phone            int                    `json:"phone,omitempty"`
+	TimeZone         string                 `json:"time_zone,omitempty"`
+	CreatedAt        time.Time              `json:"created_at,omitempty"`
+	UpdatedAt        time.Time              `json:"updated_at,omitempty"`
+	Address          string                 `json:"address,omitempty"`
+	Avatar           interface{}            `json:"avatar,omitempty"`
+	CompanyID        int                    `json:"company_id,omitempty"`
+	ViewAllTickets   bool                   `json:"view_all_tickets,omitempty"`
+	CustomFields     map[string]interface{} `json:"custom_fields,omitempty"`
+	Deleted          bool                   `json:"deleted,omitempty"`
+	Description      string                 `json:"description,omitempty"`
+	OtherEmails      []string               `json:"other_emails,omitempty"`
+	Tags             []string               `json:"tags,omitempty"`
+	TwitterID        string                 `json:"twitter_id,omitempty"`
+	UniqueExternalID string                 `json:"unique_external_id,omitempty"`
+	OtherCompanies   []string               `json:"other_companies,omitempty"`
 }
 
 type UserSlice []User
@@ -92,7 +95,7 @@ func (manager userManager) All() (UserSlice, error) {
 
 func (manager userManager) Search(query querybuilder.Query) (UserResults, error) {
 	output := struct {
-		Slice UserSlice `json:"results"`
+		Slice UserSlice `json:"results,omitempty"`
 	}{}
 	headers, err := manager.client.get(endpoints.contacts.search(query.URLSafe()), &output)
 	if err != nil {
@@ -103,4 +106,17 @@ func (manager userManager) Search(query querybuilder.Query) (UserResults, error)
 		client:  manager.client,
 		next:    manager.client.getNextLink(headers),
 	}, nil
+}
+
+func (manager userManager) Create(user *User) (*User, error) {
+	output := &User{}
+	jsonb, err := json.Marshal(user)
+	if err != nil {
+		return output, err
+	}
+	err = manager.client.postJSON(endpoints.contacts.create, jsonb, &output, http.StatusCreated)
+	if err != nil {
+		return &User{}, err
+	}
+	return output, nil
 }

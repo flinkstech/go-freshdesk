@@ -175,7 +175,7 @@ func (manager ticketManager) Create(ticket CreateTicket) (Ticket, error) {
 	output := Ticket{}
 	jsonb, err := json.Marshal(ticket)
 	if err != nil {
-		return output, nil
+		return output, err
 	}
 	err = manager.client.postJSON(endpoints.tickets.create, jsonb, &output, http.StatusCreated)
 	if err != nil {
@@ -187,7 +187,7 @@ func (manager ticketManager) Create(ticket CreateTicket) (Ticket, error) {
 func (manager ticketManager) Search(query querybuilder.Query) (TicketResults, error) {
 	output := struct {
 		Slice TicketSlice `json:"results"`
-		Total int `json:"total"`
+		Total int         `json:"total"`
 	}{}
 	_, err := manager.client.get(endpoints.tickets.search(query.URLSafe()), &output)
 	if err != nil {
@@ -199,10 +199,10 @@ func (manager ticketManager) Search(query querybuilder.Query) (TicketResults, er
 		if len(output.Slice) >= output.Total || page == 10 {
 			break
 		}
-		page += 1
+		page++
 		nextSlice := struct {
 			Slice TicketSlice `json:"results"`
-			Total int `json:"total"`
+			Total int         `json:"total"`
 		}{}
 		_, err := manager.client.get(
 			fmt.Sprintf("%s&page=%d", endpoints.tickets.search(query.URLSafe()), page),
