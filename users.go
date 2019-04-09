@@ -120,3 +120,16 @@ func (manager userManager) Create(user *User) (*User, error) {
 	}
 	return output, nil
 }
+
+func (manager userManager) Update(id int, user *User) (*User, error) {
+	output := &User{}
+	jsonb, err := json.Marshal(user)
+	if err != nil {
+		return output, err
+	}
+	err = manager.client.put(endpoints.contacts.update(id), jsonb, &output, http.StatusOK)
+	if err != nil {
+		return &User{}, err
+	}
+	return output, nil
+}
