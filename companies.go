@@ -31,10 +31,10 @@ type Company struct {
 	Note         string                 `json:"note"`
 	HealthScore  string                 `json:"health_score"`
 	AccountTier  string                 `json:"account_tier"`
-	RenewalDate  time.Time              `json:"renewal_date"`
+	RenewalDate  *time.Time             `json:"renewal_date"`
 	Industry     string                 `json:"industry"`
-	CreatedAt    time.Time              `json:"created_at"`
-	UpdatedAt    time.Time              `json:"updated_at"`
+	CreatedAt    *time.Time             `json:"created_at"`
+	UpdatedAt    *time.Time             `json:"updated_at"`
 	CustomFields map[string]interface{} `json:"custom_fields"`
 }
 

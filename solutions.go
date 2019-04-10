@@ -20,12 +20,12 @@ func newSolutionManager(client *ApiClient) solutionManager {
 }
 
 type Category struct {
-	ID               int       `json:"id,omitempty"`
-	Name             string    `json:"name,omitempty"`
-	Description      string    `json:"description,omitempty"`
-	VisibleInPortals []int     `json:"visible_in_portals"`
-	CreatedAt        time.Time `json:"created_at"`
-	UpdatedAt        time.Time `json:"updated_at"`
+	ID               int        `json:"id,omitempty"`
+	Name             string     `json:"name,omitempty"`
+	Description      string     `json:"description,omitempty"`
+	VisibleInPortals []int      `json:"visible_in_portals"`
+	CreatedAt        *time.Time `json:"created_at"`
+	UpdatedAt        *time.Time `json:"updated_at"`
 	client           *ApiClient
 }
 
@@ -50,13 +50,13 @@ func (slice CategorySlice) Print() {
 }
 
 type Folder struct {
-	ID          int       `json:"id,omitempty"`
-	Name        string    `json:"name,omitempty"`
-	Description string    `json:"description,omitempty"`
-	Visibility  int       `json:"visibility"`
-	CompanyIDs  []int     `json:"company_ids"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	ID          int        `json:"id,omitempty"`
+	Name        string     `json:"name,omitempty"`
+	Description string     `json:"description,omitempty"`
+	Visibility  int        `json:"visibility"`
+	CompanyIDs  []int      `json:"company_ids"`
+	CreatedAt   *time.Time `json:"created_at"`
+	UpdatedAt   *time.Time `json:"updated_at"`
 	client      *ApiClient
 }
 
@@ -95,8 +95,8 @@ type Article struct {
 	ThumbsDown      int               `json:"thumbs_down"`
 	ThumbsUp        int               `json:"thumbs_up"`
 	Type            int               `json:"updated_at"`
-	CreatedAt       time.Time         `json:"created_at"`
-	UpdatedAt       time.Time         `json:"updated_at"`
+	CreatedAt       *time.Time        `json:"created_at"`
+	UpdatedAt       *time.Time        `json:"updated_at"`
 	client          *ApiClient
 }
 

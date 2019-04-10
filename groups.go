@@ -20,16 +20,16 @@ func newGroupManager(client *ApiClient) groupManager {
 }
 
 type Group struct {
-	ID               int       `json:"id"`
-	Name             string    `json:"name"`
-	Description      string    `json:"description"`
-	BusinessHourID   string    `json:"business_hour_id"`
-	AgentIDs         []int     `json:"agent_ids"`
-	AutoTicketAssign bool      `json:"auto_ticket_assign"`
-	EscalateTo       int       `json:"escalate_to"`
-	UnassignedFor    string    `json:"unassigned_for"`
-	CreatedAt        time.Time `json:"created_at"`
-	UpdatedAt        time.Time `json:"updated_at"`
+	ID               int        `json:"id"`
+	Name             string     `json:"name"`
+	Description      string     `json:"description"`
+	BusinessHourID   string     `json:"business_hour_id"`
+	AgentIDs         []int      `json:"agent_ids"`
+	AutoTicketAssign bool       `json:"auto_ticket_assign"`
+	EscalateTo       int        `json:"escalate_to"`
+	UnassignedFor    string     `json:"unassigned_for"`
+	CreatedAt        *time.Time `json:"created_at"`
+	UpdatedAt        *time.Time `json:"updated_at"`
 }
 
 type GroupSlice []Group

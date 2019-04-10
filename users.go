@@ -38,12 +38,12 @@ type User struct {
 	Email            string                 `json:"email,omitempty"`
 	JobTitle         string                 `json:"job_title,omitempty"`
 	Language         string                 `json:"language,omitempty"`
-	LastLoginAt      time.Time              `json:"last_login_at,omitempty"`
+	LastLoginAt      *time.Time             `json:"last_login_at,omitempty"`
 	Mobile           int                    `json:"mobile,omitempty"`
 	Phone            int                    `json:"phone,omitempty"`
 	TimeZone         string                 `json:"time_zone,omitempty"`
-	CreatedAt        time.Time              `json:"created_at,omitempty"`
-	UpdatedAt        time.Time              `json:"updated_at,omitempty"`
+	CreatedAt        *time.Time             `json:"created_at,omitempty"`
+	UpdatedAt        *time.Time             `json:"updated_at,omitempty"`
 	Address          string                 `json:"address,omitempty"`
 	Avatar           interface{}            `json:"avatar,omitempty"`
 	CompanyID        int                    `json:"company_id,omitempty"`

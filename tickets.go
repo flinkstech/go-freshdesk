@@ -42,11 +42,11 @@ type Ticket struct {
 	CompanyID              int                    `json:"company_id"`
 	Deleted                bool                   `json:"deleted"`
 	DescriptionText        string                 `json:"description_text"`
-	DueBy                  time.Time              `json:"due_by"`
+	DueBy                  *time.Time             `json:"due_by"`
 	Email                  string                 `json:"email"`
 	EmailConfigID          int                    `json:"email_config_id"`
 	FacebookID             string                 `json:"facebook_id"`
-	FirstResponseDueBy     time.Time              `json:"fr_due_by"`
+	FirstResponseDueBy     *time.Time             `json:"fr_due_by"`
 	FirstResponseEscalated bool                   `json:"fr_escalated"`
 	FwdEmails              []string               `json:"fwd_emails"`
 	GroupID                int                    `json:"group_id"`
@@ -64,8 +64,8 @@ type Ticket struct {
 	Tags                   []string               `json:"tags"`
 	ToEmails               []string               `json:"to_emails"`
 	TwitterID              string                 `json:"twitter_id"`
-	CreatedAt              time.Time              `json:"created_at"`
-	UpdatedAt              time.Time              `json:"updated_at"`
+	CreatedAt              *time.Time             `json:"created_at"`
+	UpdatedAt              *time.Time             `json:"updated_at"`
 	CustomFields           map[string]interface{} `json:"custom_fields"`
 }
 
