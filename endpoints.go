@@ -4,6 +4,7 @@ import "fmt"
 
 type agentEndpoints struct {
 	all string
+	me  string
 }
 type articleEndpoints struct {
 	delete func(int) string
@@ -64,6 +65,7 @@ var endpoints = struct {
 }{
 	agents: agentEndpoints{
 		all: "/api/v2/agents",
+		me:  "/api/v2/agents/me",
 	},
 	companies: companyEndpoints{
 		all:    "/api/v2/companies",

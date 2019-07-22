@@ -7,6 +7,7 @@ import (
 
 type AgentManager interface {
 	All() (AgentSlice, error)
+	Me() (Agent, error)
 }
 
 type agentManager struct {
@@ -65,5 +66,15 @@ func (manager agentManager) All() (AgentSlice, error) {
 		}
 		output = append(output, nextSlice...)
 	}
+	return output, nil
+}
+
+func (manager agentManager) Me() (Agent, error) {
+	output := Agent{}
+	_, err := manager.client.get(endpoints.agents.me, &output)
+	if err != nil {
+		return Agent{}, err
+	}
+
 	return output, nil
 }
