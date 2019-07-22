@@ -13,6 +13,7 @@ import (
 type TicketManager interface {
 	All() (TicketResults, error)
 	Create(CreateTicket) (Ticket, error)
+	View(int) (Ticket, error)
 	Search(querybuilder.Query) (TicketResults, error)
 }
 
@@ -181,6 +182,16 @@ func (manager ticketManager) Create(ticket CreateTicket) (Ticket, error) {
 	if err != nil {
 		return Ticket{}, err
 	}
+	return output, nil
+}
+
+func (manager ticketManager) View(id int) (Ticket, error) {
+	output := Ticket{}
+	_, err := manager.client.get(endpoints.tickets.view(id), &output)
+	if err != nil {
+		return Ticket{}, err
+	}
+
 	return output, nil
 }
 
