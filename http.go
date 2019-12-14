@@ -7,10 +7,15 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"time"
 )
 
+const httpClientTimeout = time.Second * 10
+
 func (c *ApiClient) postJSON(path string, requestBody []byte, out interface{}, expectedStatus int) error {
-	httpClient := &http.Client{}
+	httpClient := &http.Client{
+		Timeout: httpClientTimeout,
+	}
 	if c.logger != nil {
 		c.logger.Println(string(requestBody))
 	}
@@ -53,7 +58,9 @@ func (c *ApiClient) postJSON(path string, requestBody []byte, out interface{}, e
 }
 
 func (c *ApiClient) put(path string, requestBody []byte, out interface{}, expectedStatus int) error {
-	httpClient := &http.Client{}
+	httpClient := &http.Client{
+		Timeout: httpClientTimeout,
+	}
 	if c.logger != nil {
 		c.logger.Println(string(requestBody))
 	}
@@ -96,7 +103,9 @@ func (c *ApiClient) put(path string, requestBody []byte, out interface{}, expect
 }
 
 func (c *ApiClient) get(path string, out interface{}) (http.Header, error) {
-	httpClient := &http.Client{}
+	httpClient := &http.Client{
+		Timeout: httpClientTimeout,
+	}
 	req, err := http.NewRequest("GET", fmt.Sprintf("https://%s.freshdesk.com%s", c.domain, path), nil)
 	if err != nil {
 		return nil, err
@@ -129,7 +138,9 @@ func (c *ApiClient) getNextLink(headers http.Header) string {
 }
 
 func (c *ApiClient) delete(path string) error {
-	httpClient := &http.Client{}
+	httpClient := &http.Client{
+		Timeout: httpClientTimeout,
+	}
 	req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("https://%s.freshdesk.com%s", c.domain, path), nil)
 	if err != nil {
 		return err
