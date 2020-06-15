@@ -51,6 +51,8 @@ type Ticket struct {
 	FirstResponseEscalated bool                   `json:"fr_escalated"`
 	FwdEmails              []string               `json:"fwd_emails"`
 	GroupID                int                    `json:"group_id"`
+	InternalAgentID        int                    `json:"internal_agent_id"`
+	InternalGroupID        int                    `json:"internal_group_id"`
 	IsEscalated            bool                   `json:"is_escalated"`
 	Name                   string                 `json:"name"`
 	Phone                  string                 `json:"phone"`
