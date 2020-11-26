@@ -53,6 +53,8 @@ type ticketEndpoints struct {
 	create string
 	view   func(int) string
 	search func(string) string
+	note   func(int) string
+	reply  func(int) string
 }
 
 var endpoints = struct {
@@ -104,5 +106,7 @@ var endpoints = struct {
 		create: "/api/v2/tickets",
 		view:   func(id int) string { return fmt.Sprintf("/api/v2/tickets/%d", id) },
 		search: func(query string) string { return fmt.Sprintf("/api/v2/search/tickets?%s", query) },
+		note:   func(id int) string { return fmt.Sprintf("/api/v2/tickets/%d/notes", id) },
+		reply:  func(id int) string { return fmt.Sprintf("/api/v2/tickets/%d/reply", id) },
 	},
 }
