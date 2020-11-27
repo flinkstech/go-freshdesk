@@ -13,8 +13,10 @@ import (
 type TicketManager interface {
 	All() (TicketResults, error)
 	Create(CreateTicket) (Ticket, error)
-	View(int) (Ticket, error)
+	View(ticketID int) (Ticket, error)
 	Search(querybuilder.Query) (TicketResults, error)
+	AddNote(ticketID int, note AddNote) (Note, error)
+	AddReply(ticketID int, reply AddReply) (Reply, error)
 }
 
 type ticketManager struct {
@@ -72,6 +74,36 @@ type Ticket struct {
 	CustomFields           map[string]interface{} `json:"custom_fields"`
 }
 
+type Note struct {
+	BodyText     string        `json:"body_text"`
+	Body         string        `json:"body"`
+	ID           int           `json:"id"`
+	Incoming     bool          `json:"incoming"`
+	Private      bool          `json:"private"`
+	UserID       int           `json:"user_id"`
+	SupportEmail interface{}   `json:"support_email"`
+	TicketID     int           `json:"ticket_id"`
+	NotifiedTo   []string      `json:"notified_to"`
+	Attachments  []interface{} `json:"attachments"`
+	CreatedAt    time.Time     `json:"created_at"`
+	UpdatedAt    time.Time     `json:"updated_at"`
+}
+
+type Reply struct {
+	BodyText    string        `json:"body_text"`
+	Body        string        `json:"body"`
+	ID          int           `json:"id"`
+	UserID      int           `json:"user_id"`
+	FromEmail   string        `json:"from_email"`
+	CcEmails    []string      `json:"cc_emails"`
+	BccEmails   []string      `json:"bcc_emails"`
+	TicketID    int           `json:"ticket_id"`
+	RepliedTo   []string      `json:"replied_to"`
+	Attachments []interface{} `json:"attachments"`
+	CreatedAt   time.Time     `json:"created_at"`
+	UpdatedAt   time.Time     `json:"updated_at"`
+}
+
 type CreateTicket struct {
 	Name               string                 `json:"name,omitempty"`
 	RequesterID        int                    `json:"requester_id,omitempty"`
@@ -97,6 +129,24 @@ type CreateTicket struct {
 	Source             int                    `json:"source,omitempty"`
 	Tags               []string               `json:"tags,omitempty"`
 	CompanyID          int                    `json:"company_id,omitempty"`
+}
+
+type AddNote struct {
+	Attachments  []interface{} `json:"attachments,omitempty"`
+	Body         string        `json:"body"`
+	Incoming     bool          `json:"incoming,omitempty"`
+	NotifyEmails []string      `json:"notify_emails,omitempty"`
+	Private      bool          `json:"private,omitempty"`
+	UserID       int           `json:"user_id,omitempty"`
+}
+
+type AddReply struct {
+	Attachments []interface{} `json:"attachments,omitempty"`
+	Body        string        `json:"body"`
+	FromEmail   string        `json:"from_email,omitempty"`
+	CCEmails    []string      `json:"cc_emails,omitempty"`
+	BCCEmails   []string      `json:"bcc_emails,omitempty"`
+	UserID      int           `json:"user_id,omitempty"`
 }
 
 type Source int
@@ -147,6 +197,21 @@ func (t Ticket) Print() {
 	fmt.Println(string(jsonb))
 }
 
+func (tr TicketResults) Print() {
+	jsonb, _ := json.MarshalIndent(tr, "", "    ")
+	fmt.Println(string(jsonb))
+}
+
+func (n Note) Print() {
+	jsonb, _ := json.MarshalIndent(n, "", "    ")
+	fmt.Println(string(jsonb))
+}
+
+func (r Reply) Print() {
+	jsonb, _ := json.MarshalIndent(r, "", "    ")
+	fmt.Println(string(jsonb))
+}
+
 type TicketSlice []Ticket
 
 func (s TicketSlice) Len() int { return len(s) }
@@ -187,9 +252,9 @@ func (manager ticketManager) Create(ticket CreateTicket) (Ticket, error) {
 	return output, nil
 }
 
-func (manager ticketManager) View(id int) (Ticket, error) {
+func (manager ticketManager) View(ticketID int) (Ticket, error) {
 	output := Ticket{}
-	_, err := manager.client.get(endpoints.tickets.view(id), &output)
+	_, err := manager.client.get(endpoints.tickets.view(ticketID), &output)
 	if err != nil {
 		return Ticket{}, err
 	}
@@ -233,6 +298,32 @@ func (manager ticketManager) Search(query querybuilder.Query) (TicketResults, er
 		Results: output.Slice,
 		client:  manager.client,
 	}, nil
+}
+
+func (manager ticketManager) AddNote(ticketID int, note AddNote) (Note, error) {
+	output := Note{}
+	jsonb, err := json.Marshal(note)
+	if err != nil {
+		return output, err
+	}
+	err = manager.client.postJSON(endpoints.tickets.note(ticketID), jsonb, &output, http.StatusCreated)
+	if err != nil {
+		return Note{}, err
+	}
+	return output, nil
+}
+
+func (manager ticketManager) AddReply(id int, reply AddReply) (Reply, error) {
+	output := Reply{}
+	jsonb, err := json.Marshal(reply)
+	if err != nil {
+		return output, err
+	}
+	err = manager.client.postJSON(endpoints.tickets.reply(id), jsonb, &output, http.StatusCreated)
+	if err != nil {
+		return Reply{}, err
+	}
+	return output, nil
 }
 
 func (results TicketResults) Next() (TicketResults, error) {

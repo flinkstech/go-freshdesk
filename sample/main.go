@@ -10,6 +10,8 @@ import (
 func main() {
 	logger := log.New(os.Stdout, "[logger] ", 0)
 
+	// domain refresh to what precedes .freshdesk.com
+	// eg: For test.freshdesk.com, the "domain" would be "test"
 	client := freshdesk.Init("domain", "apikey", &freshdesk.ClientOptions{Logger: logger}) // Or use freshdesk.EmptyOptions()
 
 	companies, err := client.Companies.All()
@@ -35,4 +37,16 @@ func main() {
 		panic(err)
 	}
 	ticket.Print()
+
+	note, err := client.Tickets.AddNote(ticket.ID, freshdesk.AddNote{Body: "This is a note"})
+	if err != nil {
+		panic(err)
+	}
+	note.Print()
+
+	reply, err := client.Tickets.AddReply(ticket.ID, freshdesk.AddReply{Body: "This is a reply"})
+	if err != nil {
+		panic(err)
+	}
+	reply.Print()
 }
